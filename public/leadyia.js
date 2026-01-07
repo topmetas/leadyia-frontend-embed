@@ -1,36 +1,32 @@
 /**
- * Leadyia Bot Embed Script
- * Responsável por injetar o chat no site
- */
-/**
  * Leadyia Bot – Universal Embed Script
  * -----------------------------------
  * Compatível com:
- * HTML, React, Vue, WordPress, Shopify, Wix
+ * HTML, WordPress, React, Vue, Shopify, Wix
  */
 
 (function () {
-  // Evita múltiplas cargas
+  // Evita múltiplas execuções
   if (window.LeadyiaBotLoaded) return;
   window.LeadyiaBotLoaded = true;
 
-  // Captura o script atual
+  // Script atual
   const script = document.currentScript;
 
-  // API Key pública do cliente
+  // API Key do cliente (obrigatória)
   const apiKey = script.getAttribute("data-api-key");
 
-  // URL base (permite white-label)
+  // URL do backend (pode ser sobrescrita para white-label)
   const apiUrl =
     script.getAttribute("data-api-url") ||
-    "https://api.leadyia.com";
+    "https://leadyia.onrender.com";
 
   if (!apiKey) {
-    console.error("Leadyia Bot: API Key não informada");
+    console.error("❌ Leadyia Bot: API Key não informada");
     return;
   }
 
-  // Cria iframe isolado
+  // Criação do iframe isolado
   const iframe = document.createElement("iframe");
 
   iframe.src =
@@ -38,7 +34,7 @@
     `?apiKey=${encodeURIComponent(apiKey)}` +
     `&origin=${encodeURIComponent(window.location.origin)}`;
 
-  // Estilo do widget
+  // Estilos do widget
   iframe.style.position = "fixed";
   iframe.style.bottom = "20px";
   iframe.style.right = "20px";

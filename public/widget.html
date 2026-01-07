@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Leadyia Bot</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -44,14 +41,12 @@
       padding: 8px 12px;
       border-radius: 12px;
       font-size: 14px;
-      line-height: 1.4;
     }
 
     .user {
       background: #4f46e5;
       color: #fff;
       margin-left: auto;
-      text-align: right;
     }
 
     .bot {
@@ -69,7 +64,6 @@
       padding: 12px;
       border: none;
       outline: none;
-      font-size: 14px;
     }
 
     #input button {
@@ -92,9 +86,7 @@
 <body>
   <div id="chat">
     <div id="header">Leadyia Bot</div>
-
     <div id="messages"></div>
-
     <div id="loading">Digitando...</div>
 
     <div id="input">
@@ -105,33 +97,30 @@
 
   <script>
     // -----------------------------
-    // CONFIG INICIAL
+    // CONFIGURAÇÃO
     // -----------------------------
     const params = new URLSearchParams(window.location.search);
 
-    const apiKey = params.get('apiKey');
-    const origin = params.get('origin');
-    const apiUrl = 'https://leadyia.onrender.com';
+    const apiKey = params.get("apiKey");
+    const origin = params.get("origin");
+    const apiUrl = "https://leadyia.onrender.com";
 
     const sessionId = crypto.randomUUID();
-    const language = navigator.language || 'pt-BR';
+    const language = navigator.language || "pt-BR";
 
     if (!apiKey) {
-      document.body.innerHTML = '<p>API Key inválida</p>';
-      throw new Error('API Key não encontrada');
+      document.body.innerHTML = "<p>API Key inválida</p>";
+      throw new Error("API Key não encontrada");
     }
 
-    const messagesEl = document.getElementById('messages');
-    const inputEl = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const loadingEl = document.getElementById('loading');
-    const headerEl = document.getElementById('header');
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const loadingEl = document.getElementById("loading");
+    const headerEl = document.getElementById("header");
 
-    // -----------------------------
-    // HELPERS
-    // -----------------------------
     function addMessage(text, from) {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       div.className = `message ${from}`;
       div.textContent = text;
       messagesEl.appendChild(div);
@@ -139,37 +128,32 @@
     }
 
     function setLoading(show) {
-      loadingEl.style.display = show ? 'block' : 'none';
+      loadingEl.style.display = show ? "block" : "none";
     }
 
     // -----------------------------
-    // INIT (HANDSHAKE)
+    // INIT
     // -----------------------------
     async function initWidget() {
       try {
         const res = await fetch(`${apiUrl}/api/widget/init`, {
           headers: {
-            'x-api-key': apiKey,
-            'x-origin': origin
+            "x-api-key": apiKey,
+            "x-origin": origin
           }
         });
 
-        if (!res.ok) throw new Error('Falha ao inicializar widget');
-
         const config = await res.json();
 
-        // Branding
-        headerEl.textContent = config.botName || 'Leadyia Bot';
+        headerEl.textContent = config.botName || "Leadyia Bot";
         document.documentElement.style.setProperty(
-          '--primary-color',
-          config.primaryColor || '#4f46e5'
+          "--primary-color",
+          config.primaryColor || "#4f46e5"
         );
 
-        // Mensagem inicial
-        addMessage(config.welcomeMessage || 'Olá! Posso te ajudar?', 'bot');
+        addMessage(config.welcomeMessage || "Olá! Como posso ajudar?", "bot");
       } catch (err) {
-        addMessage('Erro ao carregar o chat.', 'bot');
-        console.error(err);
+        addMessage("Erro ao carregar o chat.", "bot");
       }
     }
 
@@ -180,16 +164,16 @@
       const text = inputEl.value.trim();
       if (!text) return;
 
-      addMessage(text, 'user');
-      inputEl.value = '';
+      addMessage(text, "user");
+      inputEl.value = "";
       setLoading(true);
 
       try {
         const res = await fetch(`${apiUrl}/api/chat/message`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey
+            "Content-Type": "application/json",
+            "x-api-key": apiKey
           },
           body: JSON.stringify({
             message: text,
@@ -199,28 +183,22 @@
         });
 
         const data = await res.json();
-        addMessage(data.reply || 'Erro ao responder', 'bot');
-      } catch (err) {
-        addMessage('Erro de conexão.', 'bot');
+        addMessage(data.reply || "Erro ao responder.", "bot");
+      } catch {
+        addMessage("Erro de conexão.", "bot");
       } finally {
         setLoading(false);
       }
     }
 
-    // -----------------------------
-    // EVENTS
-    // -----------------------------
-    sendBtn.addEventListener('click', sendMessage);
-
-    inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
+    sendBtn.addEventListener("click", sendMessage);
+    inputEl.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
     });
 
-    // -----------------------------
-    // START
-    // -----------------------------
     initWidget();
   </script>
 </body>
 </html>
+
 

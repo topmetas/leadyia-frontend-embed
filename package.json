@@ -1,0 +1,9 @@
+{
+  "name": "leadyia-frontend-embed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Leadyia Bot - Frontend Embed",
+  "scripts": {
+    "dev": "echo \"Static project\""
+  }
+}
