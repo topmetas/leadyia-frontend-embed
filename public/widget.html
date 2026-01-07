@@ -98,10 +98,17 @@
   </div>
 
   <script>
+    /* ===============================
+     * CONFIGURAÇÃO
+     * =============================== */
     const params = new URLSearchParams(window.location.search);
     const apiKey = params.get("apiKey");
-    const origin = params.get("origin");
     const apiUrl = "https://leadyia.onrender.com";
+
+    if (!apiKey) {
+      document.body.innerHTML = "<p>API Key inválida</p>";
+      throw new Error("API Key ausente");
+    }
 
     const sessionId = crypto.randomUUID();
     const language = navigator.language || "pt-BR";
@@ -112,11 +119,9 @@
     const loadingEl = document.getElementById("loading");
     const headerEl = document.getElementById("header");
 
-    if (!apiKey) {
-      document.body.innerHTML = "<p>API Key inválida</p>";
-      throw new Error("API Key ausente");
-    }
-
+    /* ===============================
+     * HELPERS
+     * =============================== */
     function addMessage(text, from) {
       const div = document.createElement("div");
       div.className = `message ${from}`;
@@ -129,29 +134,41 @@
       loadingEl.style.display = show ? "block" : "none";
     }
 
+    /* ===============================
+     * INIT WIDGET
+     * =============================== */
     async function initWidget() {
       try {
         const res = await fetch(`${apiUrl}/api/widget/init`, {
           headers: {
-            "x-api-key": apiKey,
-            "x-origin": origin,
-          },
+            "x-api-key": apiKey
+          }
         });
+
+        if (!res.ok) throw new Error("Init failed");
 
         const config = await res.json();
 
         headerEl.textContent = config.botName || "Leadyia Bot";
+
         document.documentElement.style.setProperty(
           "--primary-color",
           config.primaryColor || "#4f46e5"
         );
 
-        addMessage(config.welcomeMessage || "Olá! Como posso ajudar?", "bot");
-      } catch {
+        addMessage(
+          config.welcomeMessage || "Olá! Como posso ajudar?",
+          "bot"
+        );
+      } catch (err) {
+        console.error(err);
         addMessage("⚠️ Erro ao iniciar o chat.", "bot");
       }
     }
 
+    /* ===============================
+     * SEND MESSAGE
+     * =============================== */
     async function sendMessage() {
       const text = inputEl.value.trim();
       if (!text) return;
@@ -165,19 +182,22 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": apiKey,
+            "x-api-key": apiKey
           },
           body: JSON.stringify({
             message: text,
             sessionId,
-            language,
-          }),
+            language
+          })
         });
 
+        if (!res.ok) throw new Error("Chat error");
+
         const data = await res.json();
-        addMessage(data.reply || "⚠️ Não consegui responder agora.", "bot");
-      } catch {
-        addMessage("⚠️ Erro de conexão.", "bot");
+        addMessage(data.reply, "bot");
+      } catch (err) {
+        console.error(err);
+        addMessage("⚠️ Não consegui responder agora.", "bot");
       } finally {
         setLoading(false);
       }
@@ -192,5 +212,6 @@
   </script>
 </body>
 </html>
+
 
 
