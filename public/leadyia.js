@@ -5,18 +5,19 @@
  * HTML, WordPress, React, Vue, Shopify, Wix
  */
 
+/**
+ * Leadyia Bot – Universal Embed Script
+ * -----------------------------------
+ * Compatível com HTML, WordPress, React, Vue, Shopify, Wix
+ */
+
 (function () {
-  // Evita múltiplas execuções
   if (window.LeadyiaBotLoaded) return;
   window.LeadyiaBotLoaded = true;
 
-  // Script atual
   const script = document.currentScript;
 
-  // API Key do cliente (obrigatória)
   const apiKey = script.getAttribute("data-api-key");
-
-  // URL do backend (pode ser sobrescrita para white-label)
   const apiUrl =
     script.getAttribute("data-api-url") ||
     "https://leadyia.onrender.com";
@@ -26,7 +27,6 @@
     return;
   }
 
-  // Criação do iframe isolado
   const iframe = document.createElement("iframe");
 
   iframe.src =
@@ -34,7 +34,6 @@
     `?apiKey=${encodeURIComponent(apiKey)}` +
     `&origin=${encodeURIComponent(window.location.origin)}`;
 
-  // Estilos do widget
   iframe.style.position = "fixed";
   iframe.style.bottom = "20px";
   iframe.style.right = "20px";
@@ -44,6 +43,7 @@
   iframe.style.borderRadius = "16px";
   iframe.style.zIndex = "999999";
   iframe.style.boxShadow = "0 10px 30px rgba(0,0,0,.2)";
+  iframe.style.background = "#fff";
 
   iframe.setAttribute("title", "Leadyia Bot");
   iframe.setAttribute("loading", "lazy");
@@ -52,4 +52,3 @@
 
   console.log("🤖 Leadyia Bot carregado com sucesso");
 })();
-

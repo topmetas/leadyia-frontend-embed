@@ -99,10 +99,11 @@
 
   <script>
     /* ===============================
-     * CONFIGURAÇÃO
+     * CONFIG
      * =============================== */
     const params = new URLSearchParams(window.location.search);
     const apiKey = params.get("apiKey");
+
     const apiUrl = "https://leadyia.onrender.com";
 
     if (!apiKey) {
@@ -110,7 +111,13 @@
       throw new Error("API Key ausente");
     }
 
-    const sessionId = crypto.randomUUID();
+    // 🔥 SESSION FIXA (não quebra conversa)
+    const sessionId =
+      localStorage.getItem("leadyia_session") ||
+      crypto.randomUUID();
+
+    localStorage.setItem("leadyia_session", sessionId);
+
     const language = navigator.language || "pt-BR";
 
     const messagesEl = document.getElementById("messages");
@@ -123,6 +130,8 @@
      * HELPERS
      * =============================== */
     function addMessage(text, from) {
+      if (!text) return;
+
       const div = document.createElement("div");
       div.className = `message ${from}`;
       div.textContent = text;
@@ -135,7 +144,7 @@
     }
 
     /* ===============================
-     * INIT WIDGET
+     * INIT
      * =============================== */
     async function initWidget() {
       try {
@@ -149,7 +158,8 @@
 
         const config = await res.json();
 
-        headerEl.textContent = config.botName || "Leadyia Bot";
+        headerEl.textContent =
+          config.botName || "Leadyia Bot";
 
         document.documentElement.style.setProperty(
           "--primary-color",
@@ -191,9 +201,12 @@
           })
         });
 
-        if (!res.ok) throw new Error("Chat error");
-
         const data = await res.json();
+
+        if (!data.reply) {
+          throw new Error("Resposta vazia");
+        }
+
         addMessage(data.reply, "bot");
       } catch (err) {
         console.error(err);
@@ -212,6 +225,7 @@
   </script>
 </body>
 </html>
+
 
 
 
