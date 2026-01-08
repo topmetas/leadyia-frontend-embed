@@ -17,20 +17,28 @@
 
   const script = document.currentScript;
 
-  const apiKey = script.getAttribute("data-api-key");
-  const apiUrl =
-    script.getAttribute("data-api-url") ||
-    "https://leadyia.onrender.com";
+  // API KEY (obrigatória)
+  const apiKey =
+    script.getAttribute("data-api-key") ||
+    window.LEADYIA_API_KEY;
 
   if (!apiKey) {
     console.error("❌ Leadyia Bot: API Key não informada");
     return;
   }
 
+  /**
+   * 🔥 IMPORTANTE
+   * Widget SEMPRE vem do Vercel
+   * Backend (Render) é só API
+   */
+  const WIDGET_URL =
+    "https://leadyia-frontend-embed.vercel.app/widget.html";
+
   const iframe = document.createElement("iframe");
 
   iframe.src =
-    `${apiUrl}/widget.html` +
+    `${WIDGET_URL}` +
     `?apiKey=${encodeURIComponent(apiKey)}` +
     `&origin=${encodeURIComponent(window.location.origin)}`;
 
@@ -52,3 +60,4 @@
 
   console.log("🤖 Leadyia Bot carregado com sucesso");
 })();
+

@@ -99,19 +99,21 @@
 
   <script>
     /* ===============================
-     * CONFIG
+     * CONFIG (REGRA DE OURO APLICADA)
      * =============================== */
+
     const params = new URLSearchParams(window.location.search);
     const apiKey = params.get("apiKey");
 
-    const apiUrl = "https://leadyia.onrender.com";
+    // 🔥 BACKEND FIXO NO RENDER (NUNCA window.location.origin)
+    const API_URL = "https://leadyia.onrender.com";
 
     if (!apiKey) {
       document.body.innerHTML = "<p>API Key inválida</p>";
       throw new Error("API Key ausente");
     }
 
-    // 🔥 SESSION FIXA (não quebra conversa)
+    // 🔥 SESSION PERSISTENTE (não quebra conversa)
     const sessionId =
       localStorage.getItem("leadyia_session") ||
       crypto.randomUUID();
@@ -144,17 +146,19 @@
     }
 
     /* ===============================
-     * INIT
+     * INIT WIDGET
      * =============================== */
     async function initWidget() {
       try {
-        const res = await fetch(`${apiUrl}/api/widget/init`, {
+        const res = await fetch(`${API_URL}/api/widget/init`, {
           headers: {
             "x-api-key": apiKey
           }
         });
 
-        if (!res.ok) throw new Error("Init failed");
+        if (!res.ok) {
+          throw new Error("Init widget failed");
+        }
 
         const config = await res.json();
 
@@ -171,7 +175,7 @@
           "bot"
         );
       } catch (err) {
-        console.error(err);
+        console.error("Erro no initWidget:", err);
         addMessage("⚠️ Erro ao iniciar o chat.", "bot");
       }
     }
@@ -188,7 +192,7 @@
       setLoading(true);
 
       try {
-        const res = await fetch(`${apiUrl}/api/chat/message`, {
+        const res = await fetch(`${API_URL}/api/chat/message`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -203,13 +207,13 @@
 
         const data = await res.json();
 
-        if (!data.reply) {
-          throw new Error("Resposta vazia");
+        if (!data || !data.reply) {
+          throw new Error("Resposta inválida do backend");
         }
 
         addMessage(data.reply, "bot");
       } catch (err) {
-        console.error(err);
+        console.error("Erro no sendMessage:", err);
         addMessage("⚠️ Não consegui responder agora.", "bot");
       } finally {
         setLoading(false);
